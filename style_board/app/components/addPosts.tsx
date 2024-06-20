@@ -15,8 +15,7 @@ const AddPost = () => {
 
     //storing links input fields
     const [links, setLinks] = useState(linksInputArr);
-
-    // const [title,setTitle] = useState("");
+    const [caption,setCaption] = useState("");
 
     const handleAddLinks = () => {
         setLinks( link => {
@@ -25,6 +24,7 @@ const AddPost = () => {
             ...link,
             {
               type: "text",
+              id: lastId+1,
               value: ""
             }
           ];
@@ -34,9 +34,9 @@ const AddPost = () => {
         const values = [...links];
         values.splice(index, 1);
         setLinks(values);
-      };
+    };
 
-    const handleLinkChange = (e) => {
+    const handleLinkChange = (e:any) => {
         e.preventDefault();
     
         const index = e.target.id;
@@ -46,13 +46,27 @@ const AddPost = () => {
     
           return newLink;
         });
-      };
+    };
 
+
+    const handleFile= (e:any) =>{
+        e.preventDefault();
+
+        const file= e.target.files[0];
+        
+        // if(file.type != "application/pdf"){
+        //     return;
+        // };
+        console.log(file.type);
+    
+    };
 
     const submitData = async(e:any) =>{
         e.preventDefault();
         console.log("submitted here");
         console.log(links);
+        console.log(caption);
+
         // router.refresh();
     //     try{
     //         const res= await fetch('http://localhost:3000/api/cart',{
@@ -90,21 +104,20 @@ const AddPost = () => {
                     
                     {/* <form onSubmit={submitData}> */}
                         <div className="">
-                            <input onChange={(e)=> {console.log(e.target.value);} } 
+                            <input onChange={(e)=> {console.log(e.target.value);setCaption(e.target.value);} } 
                             type="text" placeholder="Caption" 
                             className="input input-bordered w-full  mb-2" 
                             id="caption" 
                             />     
 
                             <label className="form-control w-full mb-2">{/*max-w-lg  */}
-                                <div className="label">
+                                <div className="label" key="1">
                                     <span className="label-text">Pick a file:</span>
                                 </div>
-                                <input type="file" className="file-input file-input-bordered w-full" />
-                            </label>
+                                <input  onChange={(e) => handleFile(e)}
+                                 type="file" className="file-input file-input-bordered w-full mb-2" />
 
-                            <label className="form-control w-full mb-6">{/*max-w-lg  */}
-                                <div className="label">
+                                <div className="label" key="2">
                                     <span className="label-text">Add links to your items: </span>
                                 </div>
                                 {links.map((item,i) => {
@@ -116,7 +129,8 @@ const AddPost = () => {
                                         type={item.type}
                                         placeholder={`Link ${i+1}`} 
                                         className="input input-bordered w-full mb-2" 
-                                        id={i}/>   
+                                        // id={i}
+                                        id={`${i}`}/>   
                                         <button 
                                             className="btn btn-primary btn-sm ml-2 mt-2"
                                             onClick={() => handleRemoveLinks(i)}
