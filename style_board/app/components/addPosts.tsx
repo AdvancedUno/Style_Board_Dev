@@ -4,13 +4,55 @@ import { useRouter } from 'next/navigation'
 
 const AddPost = () => {
     const router = useRouter()
-    //
-    const [inputs, setInputs] = useState<string[]>(['']);
+
+    const linksInputArr = [
+        {
+          type: "text",
+          id: 1,
+          value: ""
+        }
+    ];
+
+    //storing links input fields
+    const [links, setLinks] = useState(linksInputArr);
+
     // const [title,setTitle] = useState("");
 
+    const handleAddLinks = () => {
+        setLinks( link => {
+          const lastId = link[link.length - 1].id;
+          return [
+            ...link,
+            {
+              type: "text",
+              value: ""
+            }
+          ];
+        });
+    };
+    const handleRemoveLinks = (index: number) => {
+        const values = [...links];
+        values.splice(index, 1);
+        setLinks(values);
+      };
+
+    const handleLinkChange = (e) => {
+        e.preventDefault();
+    
+        const index = e.target.id;
+        setLinks(s => {
+          const newLink = s.slice();
+          newLink[index].value = e.target.value;
+    
+          return newLink;
+        });
+      };
+
+
     const submitData = async(e:any) =>{
-        // e.preventDefault();
-        console.log("submitted");
+        e.preventDefault();
+        console.log("submitted here");
+        console.log(links);
         // router.refresh();
     //     try{
     //         const res= await fetch('http://localhost:3000/api/cart',{
@@ -26,6 +68,7 @@ const AddPost = () => {
     //     }
 
     }
+
 
     return (
         <div>
@@ -45,7 +88,7 @@ const AddPost = () => {
                     <h3 className="font-bold text-lg">Create Post</h3>
                     <p className="py-4">Please fill the following informations to add your items</p>
                     
-                    <form onSubmit={submitData}>
+                    {/* <form onSubmit={submitData}> */}
                         <div className="">
                             <input onChange={(e)=> {console.log(e.target.value);} } 
                             type="text" placeholder="Caption" 
@@ -64,22 +107,34 @@ const AddPost = () => {
                                 <div className="label">
                                     <span className="label-text">Add links to your items: </span>
                                 </div>
-                                <input onChange={(e)=> {console.log(e.target.value);} } 
-                                    type="text" placeholder="Link 1" 
-                                    className="input input-bordered w-full  mb-2" 
-                                    id="link"/>     
-                                
-                                <button type="submit" 
+                                {links.map((item,i) => {
+                                    return(
+                                    <div className="flex">
+                                        <input key={i}
+                                        onChange={handleLinkChange}
+                                        value={item.value} 
+                                        type={item.type}
+                                        placeholder={`Link ${i+1}`} 
+                                        className="input input-bordered w-full mb-2" 
+                                        id={i}/>   
+                                        <button 
+                                            className="btn btn-primary btn-sm ml-2 mt-2"
+                                            onClick={() => handleRemoveLinks(i)}
+                                            >-</button>
+                                    </div>
+                                    );
+                                })}   
+                                <button 
                                 className="btn btn-primary btn-sm w-full max-w-xs"
-                                // onClick={handleAddField}
+                                onClick={handleAddLinks}
                                 >Add link</button>
                                                  
                             </label>
                             
-                            <button type="submit" className="btn btn-success">Submit</button>
+                            <button onClick={submitData} className="btn btn-success">Submit</button>
 
                         </div>
-                    </form>
+                    {/* </form> */}
 
                     <div className="modal-action">
                         <form method="dialog" >
