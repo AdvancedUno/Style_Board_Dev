@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation'
 
 const AddPost = () => {
     const router = useRouter()
-
     const linksInputArr = [
         {
           type: "text",
@@ -16,6 +15,7 @@ const AddPost = () => {
     //storing links input fields
     const [links, setLinks] = useState(linksInputArr);
     const [caption,setCaption] = useState("");
+    const [photos,setPhotos] = useState("");
 
     const handleAddLinks = () => {
         setLinks( link => {
@@ -31,11 +31,15 @@ const AddPost = () => {
         });
     };
     const handleRemoveLinks = (index: number) => {
+        if(index == 0 ){
+            console.log("need atleat one link");
+            alert("Need atleat one link");
+            return;
+        }
         const values = [...links];
         values.splice(index, 1);
         setLinks(values);
     };
-
     const handleLinkChange = (e:any) => {
         e.preventDefault();
     
@@ -49,15 +53,17 @@ const AddPost = () => {
     };
 
 
-    const handleFile= (e:any) =>{
+    const handleFileChange= (e:any) =>{
         e.preventDefault();
 
         const file= e.target.files[0];
-        
-        // if(file.type != "application/pdf"){
+        setPhotos(file);
+
+        // if(!file.type.startsWith('image/')){
+        //     alert("Upload Image!!");
         //     return;
         // };
-        console.log(file.type);
+
     
     };
 
@@ -66,6 +72,19 @@ const AddPost = () => {
         console.log("submitted here");
         console.log(links);
         console.log(caption);
+        console.log(photos);
+
+        const formData = new FormData();
+        formData.append("Caption",caption);
+        // formData.append("Links",links);
+        formData.append("Photo",photos);
+
+        // try{
+
+        // }catch{
+
+        // }
+        
 
         // router.refresh();
     //     try{
@@ -92,9 +111,9 @@ const AddPost = () => {
             </button> */}
             
             {/*  <!-- Open the modal using ID.showModal() method --> */}
-            <button className="btn btn-primary" onClick={() => add_post.showModal()}>Add Post</button>
+            <button className="btn btn-primary" onClick={()=> document.getElementById('add_post').showModal()}>Add Post</button>
             <dialog id="add_post" className="modal">
-                <div className="modal-box w-11/12 max-w-3xl">
+                <div className="modal-box w-11/12 max-w-3xl"> 
                     <form method="dialog">
                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                     </form>
@@ -114,9 +133,13 @@ const AddPost = () => {
                                 <div className="label" key="1">
                                     <span className="label-text">Pick a file:</span>
                                 </div>
-                                <input  onChange={(e) => handleFile(e)}
-                                 type="file" className="file-input file-input-bordered w-full mb-2" />
-
+                                <input  onChange={(e) => handleFileChange(e)}
+                                accept="image/*" //multiple
+                                type="file" 
+                                className="file-input file-input-bordered w-full mb-2" />
+                            </label>
+                        
+                            <label className="form-control w-full mb-6">
                                 <div className="label" key="2">
                                     <span className="label-text">Add links to your items: </span>
                                 </div>
@@ -148,16 +171,11 @@ const AddPost = () => {
                             <button onClick={submitData} className="btn btn-success">Submit</button>
 
                         </div>
-                    {/* </form> */}
-
-                    <div className="modal-action">
-                        <form method="dialog" >
-                            {/* <!-- if there is a button in form, it will close the modal --> */}
-                            {/* <button className="btn btn-success">Submit</button> */}
-                        </form>
-                    </div>
-                        
+  
                 </div>
+                <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
+                </form>                   
             </dialog>
         </div>
     )
