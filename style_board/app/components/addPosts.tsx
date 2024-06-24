@@ -4,13 +4,13 @@ import { useRouter } from 'next/navigation'
 
 const AddPost = () => {
     const router = useRouter()
-    const linksInputArr = [
-        {
+    const linksInputArr = 
+        [{
           type: "text",
           id: 1,
           value: ""
-        }
-    ];
+        }]
+    ;
 
     //storing links input fields
     const [links, setLinks] = useState(linksInputArr);
@@ -68,37 +68,27 @@ const AddPost = () => {
     };
 
     const submitData = async(e:any) =>{
-        e.preventDefault();
-        console.log("submitted here");
+        // e.preventDefault();
         console.log(links);
         console.log(caption);
         console.log(photos);
 
         const formData = new FormData();
         formData.append("Caption",caption);
-        // formData.append("Links",links);
+        formData.append("Links",JSON.stringify(links));
         formData.append("Photo",photos);
 
         // try{
+        //     const res= await fetch('http://localhost:3000/api/posts',{
+        //         method: "POST",
+        //         body: formData,
+        //     });
 
-        // }catch{
+        // }catch(error){
+        //     console.log(error);
 
         // }
-        
-
-        // router.refresh();
-    //     try{
-    //         const res= await fetch('http://localhost:3000/api/cart',{
-    //             method: "POST",
-    //             headers: {
-    //                 "Content-type": "application/json",
-    //             },
-    //             body: JSON.stringify({title}),
-    //         });
-    //     }catch(error){
-    //         console.log("error: ");
-    //         console.log(error);
-    //     }
+            router.refresh();        
 
     }
 
@@ -111,7 +101,7 @@ const AddPost = () => {
             </button> */}
             
             {/*  <!-- Open the modal using ID.showModal() method --> */}
-            <button className="btn btn-primary" onClick={()=> document.getElementById('add_post').showModal()}>Add Post</button>
+            <button className="btn btn-primary" onClick={add_post.showModal()}>Add Post</button>
             <dialog id="add_post" className="modal">
                 <div className="modal-box w-11/12 max-w-3xl"> 
                     <form method="dialog">
@@ -168,7 +158,7 @@ const AddPost = () => {
                                                  
                             </label>
                             
-                            <button onClick={submitData} className="btn btn-success">Submit</button>
+                            <button onClick={(e) => submitData(e)} className="btn btn-success">Submit</button>
 
                         </div>
   

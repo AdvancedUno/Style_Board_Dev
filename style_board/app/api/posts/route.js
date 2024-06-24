@@ -13,12 +13,13 @@ const s3Client = new S3Client({
 
 async function uploadFileToS3(file,fileName){
     const fileBuffer = file;
-    
+    const key_url=`${fileName}-${Date.now()}`;
     const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key: `${fileName}-${Date.now()}`,
+        //your do `folderName/${fileName}-${Date.now()}` to create chunk
+        Key: key_url,
         Body: fileBuffer,
-        ContentType: "image/*",
+        ContentType: "image/jpeg",
     }
     
     const command = new PutObjectCommand(params);
@@ -27,9 +28,9 @@ async function uploadFileToS3(file,fileName){
     }catch(error){
         console.log(error);
     }
-    // console.log(res);
+    
 
-    return fileName;
+    return key_url;
 }
 
 
@@ -37,6 +38,8 @@ export async function POST(request){
     try{
         const formData = await request.formData();
         const file = formData.get("Photo");
+        // const caption = formData.get("Caption");
+
   
         if(!file){
             return NextResponse.json({error: "file is required"},{status: 400});
@@ -45,11 +48,18 @@ export async function POST(request){
         const buffer = Buffer.from(await file.arrayBuffer());
         
         //uploading the image file to AWS
-        const res = await uploadFileToS3(buffer,file.name);
+        const key_url = await uploadFileToS3(buffer,file.name);
         
         //Uploading to MONGODB
-        console.log(res);
-        
+        await connectMongoDB();
+        const photo_url= `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key_url}`;
+
+        // console.log(formData.get("Links"));
+        try{
+            await Posts.create({Caption: formData.get("Caption"),Links: formData.get("Links"),Photo_url:photo_url});
+        }catch(error){
+            console.log(error);
+        }
         return NextResponse.json({message: "Post created"});
 
     }catch(error){
@@ -60,9 +70,9 @@ export async function POST(request){
     
 }
 
-export async function GET(){
-    await connectMongoDB();
-    const Posts = await Posts.find();
-    return NextResponse.json({Posts});
-}
+// export async function GET(){
+//     await connectMongoDB();
+//     const Posts = await Posts.find();
+//     return NextResponse.json({Posts});
+// }
 

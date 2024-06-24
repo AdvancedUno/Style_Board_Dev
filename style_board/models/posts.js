@@ -3,8 +3,8 @@ import mongoose,{ Schema } from "mongoose";
 const postSchema = new Schema(
     {
         Caption: String,
-        // links: [],
-        Photo: String,
+        Links: String,
+        Photo_url: String,
 
     },
     {
