@@ -1,4 +1,4 @@
-import connectMongoDB from "@/lib/mongodb";
+import connectMongoDB from "@/lib/db/mongodb";
 import Posts from "@/models/posts";
 import {NextResponse} from "next/server"
 
@@ -8,6 +8,28 @@ import {NextResponse} from "next/server"
 export async function GET(request,{params}){
     const {id} =  params;
     await connectMongoDB();
-    const post = await Posts.findOne({_id:id});
-    return NextResponse.json({post},{status: 200});
+    try{
+        const post = await Posts.findOne({_id:id});
+        return NextResponse.json({post},{status: 200});
+    }catch(error){
+        console.log(error);
+        return NextResponse.json({error:`Error getting the post of ${id}`},{status: 500});
+    }
+
+}
+
+export async function PUT(request,{params}){
+  
+    const {id} =  params;
+    const { newCaption: caption} = await request.json();
+
+    await connectMongoDB();
+    try{
+        await Posts.findByIdAndUpdate(id, {caption} );
+        return NextResponse.json({message: `Post caption updated with :${caption} `},{status: 200});
+    }catch(error){
+        console.log(error);
+        return NextResponse.json({error:`Error updating the post of ${id}`},{status: 500});
+    }
+
 }

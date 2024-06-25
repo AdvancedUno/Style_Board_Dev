@@ -38,9 +38,7 @@ export async function POST(request){
     try{
         const formData = await request.formData();
         const file = formData.get("Photo");
-        // const caption = formData.get("Caption");
 
-  
         if(!file){
             return NextResponse.json({error: "file is required"},{status: 400});
         }
@@ -60,7 +58,7 @@ export async function POST(request){
         }catch(error){
             console.log(error);
         }
-        return NextResponse.json({message: "Post created"});
+        return NextResponse.json({message: "Post created"},{status: 200});
 
     }catch(error){
         console.log(error);
@@ -70,9 +68,34 @@ export async function POST(request){
     
 }
 
-// export async function GET(){
-//     await connectMongoDB();
-//     const Posts = await Posts.find();
-//     return NextResponse.json({Posts});
-// }
+export async function GET(){
+    await connectMongoDB();
+    try{
+        const posts = await Posts.find();         
+        return NextResponse.json({posts},{status: 200});
+    }catch(error){
+        console.log(error);
+        return NextResponse.json({error: "Error getting posts"},{status: 500});
+    }
+
+}
+
+export async function DELETE(request){
+    const id = request.nextUrl.searchParams.get("id");
+    await connectMongoDB();
+    try{
+        //deleting post in MongoDB
+        await Posts.findByIdAndDelete(id);      
+
+        //deleting the post photo from the AWS 
+
+
+        return NextResponse.json({message:`Post deleted of id: ${id}`},{status: 200});
+    }catch(error){
+        console.log(error);
+        return NextResponse.json({error: "Error deleting posts"},{status: 500});
+    }
+
+
+}
 

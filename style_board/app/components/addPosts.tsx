@@ -1,8 +1,10 @@
 'use client';
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useRouter } from 'next/navigation'
+import { document } from "postcss";
 
 const AddPost = () => {
+    const dialogRef = useRef<HTMLDialogElement>(null);
     const router = useRouter()
     const linksInputArr = 
         [{
@@ -17,7 +19,8 @@ const AddPost = () => {
     const [caption,setCaption] = useState("");
     const [photos,setPhotos] = useState("");
 
-    const handleAddLinks = () => {
+    const handleAddLinks = (e:any) => {
+        e.preventDefault();
         setLinks( link => {
           const lastId = link[link.length - 1].id;
           return [
@@ -30,7 +33,8 @@ const AddPost = () => {
           ];
         });
     };
-    const handleRemoveLinks = (index: number) => {
+    const handleRemoveLinks = (e:any,index: number) => {
+        e.preventDefault();
         if(index == 0 ){
             console.log("need atleat one link");
             alert("Need atleat one link");
@@ -67,6 +71,12 @@ const AddPost = () => {
     
     };
 
+    const handleAddPosts= () =>{
+        if (dialogRef.current) {
+            dialogRef.current.showModal();
+          }
+    }
+
     const submitData = async(e:any) =>{
         // e.preventDefault();
         console.log(links);
@@ -78,18 +88,16 @@ const AddPost = () => {
         formData.append("Links",JSON.stringify(links));
         formData.append("Photo",photos);
 
-        // try{
-        //     const res= await fetch('http://localhost:3000/api/posts',{
-        //         method: "POST",
-        //         body: formData,
-        //     });
+        try{
+            const res= await fetch('http://localhost:3000/api/posts',{
+                method: "POST",
+                body: formData,
+            });
 
-        // }catch(error){
-        //     console.log(error);
-
-        // }
-            router.refresh();        
-
+        }catch(error){
+            console.log(error);
+        }
+        
     }
 
 
@@ -101,8 +109,10 @@ const AddPost = () => {
             </button> */}
             
             {/*  <!-- Open the modal using ID.showModal() method --> */}
-            <button className="btn btn-primary" onClick={add_post.showModal()}>Add Post</button>
-            <dialog id="add_post" className="modal">
+            <button className="btn btn-primary" onClick={handleAddPosts}>Add Post</button>
+
+
+            <dialog id="add_post" className="modal" ref={dialogRef} >
                 <div className="modal-box w-11/12 max-w-3xl"> 
                     <form method="dialog">
                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
@@ -111,7 +121,7 @@ const AddPost = () => {
                     <h3 className="font-bold text-lg">Create Post</h3>
                     <p className="py-4">Please fill the following informations to add your items</p>
                     
-                    {/* <form onSubmit={submitData}> */}
+                    <form>
                         <div className="">
                             <input onChange={(e)=> {console.log(e.target.value);setCaption(e.target.value);} } 
                             type="text" placeholder="Caption" 
@@ -146,7 +156,7 @@ const AddPost = () => {
                                         id={`${i}`}/>   
                                         <button 
                                             className="btn btn-primary btn-sm ml-2 mt-2"
-                                            onClick={() => handleRemoveLinks(i)}
+                                            onClick={(e) => handleRemoveLinks(e,i)}
                                             >-</button>
                                     </div>
                                     );
@@ -158,10 +168,12 @@ const AddPost = () => {
                                                  
                             </label>
                             
-                            <button onClick={(e) => submitData(e)} className="btn btn-success">Submit</button>
+                            <button 
+                             onClick={(e) => submitData(e)} 
+                             className="btn btn-success">Submit</button>
 
                         </div>
-  
+                    </form>
                 </div>
                 <form method="dialog" className="modal-backdrop">
                     <button>close</button>
