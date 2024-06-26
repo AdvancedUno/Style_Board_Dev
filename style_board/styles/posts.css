@@ -1,23 +1,49 @@
-.grid-container {
+.post-grid-container {
     display: grid;
     gap: 1rem; /* Equivalent to gap-4 in Tailwind */
   }
+
+ .post-caption {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  }
+
+
+  @media (min-width: 0px) { /* xs: */
+    .post-grid-container {
+      grid-template-columns: repeat(0, 1fr);
+    }
+  }
   
-  @media (min-width: 640px) { /* sm: */
-    .grid-container {
-      grid-template-columns: repeat(2, 1fr); /* Equivalent to sm:grid-cols-2 */
+  @media (min-width: 576px) { /* sm: */
+    .post-grid-container {
+      grid-template-columns: repeat(1, 1fr); /* Equivalent to sm:grid-cols-1 */
     }
   }
   
   @media (min-width: 768px) { /* md: */
-    .grid-container {
-      grid-template-columns: repeat(3, 1fr); /* Equivalent to md:grid-cols-3 */
+    .post-grid-container {
+      grid-template-columns: repeat(2, 1fr); /* Equivalent to md:grid-cols-2 */
     }
   }
   
-  @media (min-width: 1024px) { /* lg: */
-    .grid-container {
-      grid-template-columns: repeat(4, 1fr); /* Equivalent to lg:grid-cols-4 */
+  @media (min-width: 992px) { /* lg: */
+    .post-grid-container {
+      grid-template-columns: repeat(3, 1fr); /* Equivalent to lg:grid-cols-3 */
     }
   }
   
+  @media (min-width: 1200px) { /* xl: */
+    .post-grid-container {
+      grid-template-columns: repeat(4, 1fr); /* Equivalent to xl:grid-cols-4 */
+    }
+  }
+
+  /* @media (min-width: 1400px) { /* xxl: */
+    /* .post-grid-container {
+      grid-template-columns: repeat(5, 1fr); /* Equivalent to xxl:grid-cols-5 */
+    /* } */
+  /* } */

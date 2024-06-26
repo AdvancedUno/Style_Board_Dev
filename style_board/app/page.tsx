@@ -1,13 +1,14 @@
 import Image from "next/image";
 import AddPost from "./components/addPosts";
-import GetPosts from "./components/getPosts";
+import GetFeed from "./feed";
 
 
 export default function Home() {
+
   return (
     <main>
       <AddPost/>
-      <GetPosts/>
+      <GetFeed/>
     </main>
   );
 }

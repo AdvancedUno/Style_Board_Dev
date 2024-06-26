@@ -88,6 +88,7 @@ export async function DELETE(request){
         await Posts.findByIdAndDelete(id);      
 
         //deleting the post photo from the AWS 
+        //to do : ...
 
 
         return NextResponse.json({message:`Post deleted of id: ${id}`},{status: 200});

@@ -56,7 +56,7 @@ const AddPost = () => {
         });
     };
 
-
+    //upload photo
     const handleFileChange= (e:any) =>{
         e.preventDefault();
 
@@ -72,7 +72,7 @@ const AddPost = () => {
     }
 
     const submitData = async(e:any) =>{
-        // e.preventDefault();
+        e.preventDefault();
         console.log(links);
         console.log(caption);
         console.log(photos);
@@ -88,9 +88,13 @@ const AddPost = () => {
                 body: formData,
             });
 
+            
+
+
         }catch(error){
             console.log(error);
         }
+        window.location.reload();
         
     }
 
