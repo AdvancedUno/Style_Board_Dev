@@ -130,7 +130,7 @@ const AddPost = () => {
                             />     
 
                             <label className="form-control w-full mb-2">{/*max-w-lg  */}
-                                <div className="label" key="1">
+                                <div className="label">
                                     <span className="label-text">Pick a file:</span>
                                 </div>
                                 <input  onChange={(e) => handleFileChange(e)}
@@ -140,13 +140,13 @@ const AddPost = () => {
                             </label>
                         
                             <label className="form-control w-full mb-6">
-                                <div className="label" key="2">
+                                <div className="label" >
                                     <span className="label-text">Add links to your items: </span>
                                 </div>
                                 {links.map((item,i) => {
                                     return(
                                     <div className="flex">
-                                        <input key={i}
+                                        <input key={item.id}
                                         onChange={handleLinkChange}
                                         value={item.value} 
                                         type={item.type}
