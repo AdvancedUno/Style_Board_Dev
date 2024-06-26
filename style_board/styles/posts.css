@@ -1,0 +1,23 @@
+.grid-container {
+    display: grid;
+    gap: 1rem; /* Equivalent to gap-4 in Tailwind */
+  }
+  
+  @media (min-width: 640px) { /* sm: */
+    .grid-container {
+      grid-template-columns: repeat(2, 1fr); /* Equivalent to sm:grid-cols-2 */
+    }
+  }
+  
+  @media (min-width: 768px) { /* md: */
+    .grid-container {
+      grid-template-columns: repeat(3, 1fr); /* Equivalent to md:grid-cols-3 */
+    }
+  }
+  
+  @media (min-width: 1024px) { /* lg: */
+    .grid-container {
+      grid-template-columns: repeat(4, 1fr); /* Equivalent to lg:grid-cols-4 */
+    }
+  }
+  

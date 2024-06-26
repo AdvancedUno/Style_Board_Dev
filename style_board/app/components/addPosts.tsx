@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useRef } from "react";
 import { useRouter } from 'next/navigation'
-import { document } from "postcss";
+
 
 const AddPost = () => {
     const dialogRef = useRef<HTMLDialogElement>(null);
@@ -62,12 +62,6 @@ const AddPost = () => {
 
         const file= e.target.files[0];
         setPhotos(file);
-
-        // if(!file.type.startsWith('image/')){
-        //     alert("Upload Image!!");
-        //     return;
-        // };
-
     
     };
 
@@ -103,11 +97,6 @@ const AddPost = () => {
 
     return (
         <div>
-            {/* <input onChange={(e)=> {console.log(e.target.value);setTitle(e.target.value);} } type="text" placeholder="data" classNameName="input input-bordered w-full max-w-xs" id="data"/> */}
-            {/* <button className="btn btn-primary" onClick={()=> console.log("added")}> {/*onClick={submitData}>*/}
-                {/* Add Post
-            </button> */}
-            
             {/*  <!-- Open the modal using ID.showModal() method --> */}
             <button className="btn btn-primary" onClick={handleAddPosts}>Add Post</button>
 

@@ -25,7 +25,7 @@ export async function PUT(request,{params}){
 
     await connectMongoDB();
     try{
-        await Posts.findByIdAndUpdate(id, {caption} );
+        await Posts.findByIdAndUpdate(id, {Caption: caption} );
         return NextResponse.json({message: `Post caption updated with :${caption} `},{status: 200});
     }catch(error){
         console.log(error);
