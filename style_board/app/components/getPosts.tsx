@@ -35,45 +35,39 @@ const GetPosts = ({post}:PostProps) => {
         
     }
 
+    // <div className="dropdown indicator-item badge">
+    // <div tabIndex={0} role="button" className="">
+    //     <SlOptions className="post-ptions" />
+    // </div>
+
+    // <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+    //     <li><button onClick={(e)=> handleDelete(e,post._id)}>Delete</button></li>
+    //     <li><a>Edit</a></li>
+    // </ul>
+
 
     return (
-        <div className="card card-bordered w-96 card-compact bg-base-300 shadow-lg indicator"
-        style={{
-            // ['maxHeight' as any]:"300px",
-            // ['maxWidth' as any ]:"305px"
-        }}>
-            
-            <figure>
-                <div className="dropdown indicator-item badge">
-                    <div tabIndex={0} role="button" className="">
-                        <SlOptions className="post-ptions" />
+        <>
+            <div className="post-card">
+                <div className="imageContainer">
+                    <img src={`${post.Photo_url}`} alt="Photo" className="image" />
+                
+                {/* on hover body */}
+                {/* <div className="body">
+                    <h2>d</h2>
+                    <p>d</p>
+                </div> */}
+                
+                    <span className="post-caption">{post.Caption}</span>
+                    <div className="card-actions justify-end">
+                        <div className="badge badge-outline">Fashion</div>
+                        <div className="badge badge-outline">Products</div>
                     </div>
+                </div>
+            </div>        
+        </>
 
-                    <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                        <li><button onClick={(e)=> handleDelete(e,post._id)}>Delete</button></li>
-                        <li><a>Edit</a></li>
-                    </ul>
-                </div>
-                <img 
-                style={{
-                    // ['max-height' as any]:"170px",
-                    // ['max-width' as any ]:"259px"
-                }}
-                src={`${post.Photo_url}`}
-                alt="Photo" />
-            </figure>
-            <div className="card-body">
-                {/* <h2 className="card-title">{post.Caption}</h2> */}
-                {/* <p>{post.createdAt}</p> */}
-                <span className="post-caption"> {post.Caption} </span>
-                <div className="card-actions justify-end">
-                    <div className="badge badge-outline">Fashion</div>
-                    <div className="badge badge-outline">Products</div>
-                    
-                </div>
-                <button className="btn btn-primary btn-sm w-full max-w-xs self-center">Buy Now</button>
-            </div>
-        </div>   
+      
     )
 }
 

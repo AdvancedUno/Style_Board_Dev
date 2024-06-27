@@ -1,49 +1,61 @@
-.post-grid-container {
-    display: grid;
-    gap: 1rem; /* Equivalent to gap-4 in Tailwind */
-  }
+/* Responsive Grid */
+.post-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  padding: 20px;
+}
 
- .post-caption {
+/* components/Responsivepost-card.module.css */
+.post-card {
+  position: relative;
+  /* overflow: hidden; */
+  border-radius: 5px;
+}
+
+.post-caption {
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   }
 
+.imageContainer {
+  position: relative;
+  /* width: 100%; */
+  aspect-ratio:16/9;
+}
 
-  @media (min-width: 0px) { /* xs: */
-    .post-grid-container {
-      grid-template-columns: repeat(0, 1fr);
-    }
-  }
-  
-  @media (min-width: 576px) { /* sm: */
-    .post-grid-container {
-      grid-template-columns: repeat(1, 1fr); /* Equivalent to sm:grid-cols-1 */
-    }
-  }
-  
-  @media (min-width: 768px) { /* md: */
-    .post-grid-container {
-      grid-template-columns: repeat(2, 1fr); /* Equivalent to md:grid-cols-2 */
-    }
-  }
-  
-  @media (min-width: 992px) { /* lg: */
-    .post-grid-container {
-      grid-template-columns: repeat(3, 1fr); /* Equivalent to lg:grid-cols-3 */
-    }
-  }
-  
-  @media (min-width: 1200px) { /* xl: */
-    .post-grid-container {
-      grid-template-columns: repeat(4, 1fr); /* Equivalent to xl:grid-cols-4 */
-    }
-  }
+.image {
+  border-radius: 8px;
+}
 
-  /* @media (min-width: 1400px) { /* xxl: */
-    /* .post-grid-container {
-      grid-template-columns: repeat(5, 1fr); /* Equivalent to xxl:grid-cols-5 */
-    /* } */
-  /* } */
+
+.post-card:hover .image {
+  box-shadow: 5px 4px 8px rgba(0, 0, 0, 0.7);
+}
+
+/* .body {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  padding: 16px;
+} */
+
+/* .post-card:hover .body{
+  transform: scale(1);
+} */
+
+
+
