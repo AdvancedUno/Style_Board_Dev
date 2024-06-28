@@ -1,39 +1,25 @@
-/* Responsive Grid */
-.post-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 16px;
-  padding: 20px;
-}
-
 /* components/Responsivepost-card.module.css */
+
 .post-card {
-  position: relative;
+  /* position: relative; */
   /* overflow: hidden; */
   border-radius: 5px;
 }
 
 .post-caption {
   display: -webkit-box;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   }
 
-.imageContainer {
-  position: relative;
-  /* width: 100%; */
-  aspect-ratio:16/9;
-}
-
 .image {
   border-radius: 8px;
 }
 
-
 .post-card:hover .image {
-  box-shadow: 5px 4px 8px rgba(0, 0, 0, 0.7);
+  box-shadow: 1px 4px 8px rgba(0, 0, 0, 0.7);
 }
 
 /* .body {
@@ -56,6 +42,7 @@
 /* .post-card:hover .body{
   transform: scale(1);
 } */
+
 
 
 

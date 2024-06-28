@@ -5,6 +5,7 @@ import Router from 'next/router'
 import '@/styles/posts.css'; 
 import Image from 'next/image'
 import { SlOptions } from "react-icons/sl";
+import Drawer from "./Drawer";
 
 interface PostProps {
     post:{
@@ -48,8 +49,8 @@ const GetPosts = ({post}:PostProps) => {
 
     return (
         <>
-            <div className="post-card">
-                <div className="imageContainer">
+             <div className="post-card overflow-scroll p-1"> {/*onClick={() =>Drawer(true)}> */}
+                <div className="">
                     <img src={`${post.Photo_url}`} alt="Photo" className="image" />
                 
                 {/* on hover body */}
@@ -60,13 +61,12 @@ const GetPosts = ({post}:PostProps) => {
                 
                     <span className="post-caption">{post.Caption}</span>
                     <div className="card-actions justify-end">
-                        <div className="badge badge-outline">Fashion</div>
-                        <div className="badge badge-outline">Products</div>
+                        <span className="badge badge-outline text-xs">Fashion</span>
+                        <span className="badge badge-outline text-xs">Products</span>
                     </div>
                 </div>
             </div>        
         </>
-
       
     )
 }
