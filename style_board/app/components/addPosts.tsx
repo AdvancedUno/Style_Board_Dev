@@ -74,8 +74,6 @@ const AddPost = () => {
     const submitData = async(e:any) =>{
         e.preventDefault();
         console.log(links);
-        console.log(caption);
-        console.log(photos);
 
         const formData = new FormData();
         formData.append("Caption",caption);
@@ -87,9 +85,6 @@ const AddPost = () => {
                 method: "POST",
                 body: formData,
             });
-
-            
-
 
         }catch(error){
             console.log(error);
@@ -116,7 +111,7 @@ const AddPost = () => {
                     
                     <form>
                         <div className="">
-                            <input onChange={(e)=> {console.log(e.target.value);setCaption(e.target.value);} } 
+                            <input onChange={(e)=> {;setCaption(e.target.value);} } 
                             type="text" placeholder="Caption" 
                             className="input input-bordered w-full  mb-2" 
                             id="caption" 

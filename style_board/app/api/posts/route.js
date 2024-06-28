@@ -1,7 +1,7 @@
 import connectMongoDB from "@/lib/db/mongodb";
 import Posts from "@/models/posts";
 import {NextResponse} from "next/server"
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { PutObjectCommand, S3Client,DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 const s3Client = new S3Client({
     region: process.env.AWS_REGION,
@@ -82,13 +82,24 @@ export async function GET(){
 
 export async function DELETE(request){
     const id = request.nextUrl.searchParams.get("id");
+    const key = request.nextUrl.searchParams.get("key");
     await connectMongoDB();
     try{
         //deleting post in MongoDB
         await Posts.findByIdAndDelete(id);      
 
         //deleting the post photo from the AWS 
-        //to do : ...
+        const params = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: key,
+        }
+        
+        const command = new DeleteObjectCommand(params);
+        try{
+            const res = await s3Client.send(command);
+        }catch(error){
+            console.log(error);
+        }
 
 
         return NextResponse.json({message:`Post deleted of id: ${id}`},{status: 200});

@@ -1,11 +1,9 @@
 "use client";
-
 import Image from "next/image";
-import AddPost from "./components/addPosts";
-import GetFeed from "./feed";
 import { useEffect, useState } from "react";
 import Login from "./pages/loginPage";
-
+import GetPosts from "./components/getPosts";
+import AddPost from "./components/addPosts";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -31,8 +29,9 @@ export default function Home() {
         </>
       )} */}
       <>
-      
-      <GetFeed />
+      <AddPost />      
+      <GetPosts/>
+
       </>
     </main>
   );
