@@ -20,7 +20,7 @@ export default function Home() {
   }, []);
   return (
     <main>
-      {isLoggedIn ? (
+      {/* {isLoggedIn ? (
         <>
           <AddPost />
           <GetFeed />
@@ -29,7 +29,11 @@ export default function Home() {
         <>
           <Login />
         </>
-      )}
+      )} */}
+      <>
+      
+      <GetFeed />
+      </>
     </main>
   );
 }
