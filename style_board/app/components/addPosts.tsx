@@ -81,7 +81,7 @@ const AddPost = () => {
         formData.append("Photo",photos);
 
         try{
-            const res= await fetch('http://localhost:3000/api/posts',{
+            const res= await fetch('/api/posts',{
                 method: "POST",
                 body: formData,
             });
@@ -111,7 +111,7 @@ const AddPost = () => {
                     
                     <form>
                         <div className="">
-                            <input onChange={(e)=> {;setCaption(e.target.value);} } 
+                            <input onChange={(e)=> {setCaption(e.target.value);} } 
                             type="text" placeholder="Caption" 
                             className="input input-bordered w-full  mb-2" 
                             id="caption" 
@@ -121,10 +121,10 @@ const AddPost = () => {
                                 <div className="label">
                                     <span className="label-text">Pick a file:</span>
                                 </div>
-                                <input  onChange={(e) => handleFileChange(e)}
+                                <input  onChange={(e) => handleFileChange(e)} 
                                 accept="image/*" //multiple
                                 type="file" 
-                                className="file-input file-input-bordered w-full mb-2" />
+                                className="file-input file-input-bordered w-full mb-2" required />
                             </label>
                         
                             <label className="form-control w-full mb-6">
@@ -132,9 +132,9 @@ const AddPost = () => {
                                     <span className="label-text">Add links to your items: </span>
                                 </div>
                                 {links.map((item,i) => {
-                                    return(
-                                    <div className="flex">
-                                        <input key={item.id}
+                                    return( 
+                                    <div className="flex" key={item.id}>
+                                        <input required 
                                         onChange={handleLinkChange}
                                         value={item.value} 
                                         type={item.type}

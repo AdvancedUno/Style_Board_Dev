@@ -38,9 +38,10 @@ export async function POST(request){
     try{
         const formData = await request.formData();
         const file = formData.get("Photo");
+        const links = formData.get("Links");
 
-        if(!file){
-            return NextResponse.json({error: "file is required"},{status: 400});
+        if(!file || links != ""){
+            return NextResponse.json({error: "file and link is required"},{status: 400});
         }
 
         const buffer = Buffer.from(await file.arrayBuffer());
@@ -54,7 +55,7 @@ export async function POST(request){
 
         // console.log(formData.get("Links"));
         try{
-            await Posts.create({Caption: formData.get("Caption"),Links: formData.get("Links"),Photo_url:photo_url});
+            await Posts.create({Caption: formData.get("Caption"),Links: links,Photo_url:photo_url});
         }catch(error){
             console.log(error);
         }

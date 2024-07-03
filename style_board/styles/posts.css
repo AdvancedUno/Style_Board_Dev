@@ -4,6 +4,7 @@
   /* position: relative; */
   /* overflow: hidden; */
   border-radius: 5px;
+  cursor: pointer;
 }
 
 .post-caption {

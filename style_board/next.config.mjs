@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 
-    //To allow images from external sources while using <Image> </Image>
+    // // To allow images from external sources while using <Image> </Image>
     // images:{
     //     remotePatterns: [
     //         {
