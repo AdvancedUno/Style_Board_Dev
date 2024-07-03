@@ -1,24 +1,30 @@
 'use client';
 import React, { useState, useRef } from "react";
 import { useRouter } from 'next/navigation'
-
+import cheerio from 'cheerio';
 
 const AddPost = () => {
+    //using ref to handle Modal Add post
     const dialogRef = useRef<HTMLDialogElement>(null);
     const router = useRouter()
     const linksInputArr = 
         [{
-          type: "text",
           id: 1,
-          value: ""
-        }]
-    ;
+          value: "",
+          data:[{
+            id: 0,
+            product_name:"",
+            product_img: "",
+          }],
+          showPhotoInput: false
+        }];
 
     //storing links input fields
     const [links, setLinks] = useState(linksInputArr);
     const [caption,setCaption] = useState("");
-    const [photos,setPhotos] = useState("");
+    const [photos,setPhotos] = useState([]);
 
+    //Handle Links 
     const handleAddLinks = (e:any) => {
         e.preventDefault();
         setLinks( link => {
@@ -26,42 +32,88 @@ const AddPost = () => {
           return [
             ...link,
             {
-              type: "text",
               id: lastId+1,
-              value: ""
+              value: "",
+              data: [{ 
+                id: 1,
+                product_name:"",
+                product_img: "",
+            }],
+              showPhotoInput: false,
             }
           ];
         });
     };
     const handleRemoveLinks = (e:any,index: number) => {
         e.preventDefault();
-        if(index == 0 ){
+        if(links.length == 1 ){
             console.log("need atleat one link");
             alert("Need atleat one link");
             return;
-        }
+        }  
         const values = [...links];
         values.splice(index, 1);
         setLinks(values);
     };
     const handleLinkChange = (e:any) => {
         e.preventDefault();
-    
         const index = e.target.id;
+        checkLink(e.target.value,e,index);
         setLinks(s => {
           const newLink = s.slice();
           newLink[index].value = e.target.value;
-    
           return newLink;
-        });
+        });        
+
     };
+    const checkLink = async (url:string,e:any,index:number) =>{
+        try{
+            const response  = await fetch(url);
+            if(response.status == 200){
+                setLinks(s => {
+                    const newLinks = s.slice();
+                    newLinks[index].showPhotoInput = false;
+                    return newLinks;
+                });
+            }else{
+                setLinks(s => {
+                    const newLinks = s.slice();
+                    newLinks[index].showPhotoInput = true;
+                    return newLinks;
+                });
+            }
+        }catch(error){
+            // console.log(error);
+            setLinks(s => {
+                const newLinks = s.slice();
+                newLinks[index].showPhotoInput = true;
+                return newLinks;
+            });
+            return;
+        }
+
+    };
+    const handleLinkPhotoChange = (e: any, index: number) => {
+        setLinks(s => {
+            const newLinks = s.slice();
+            newLinks[index].data[0].product_img = e.target.value;
+            return newLinks;
+        });        
+    };
+    const handleLinkProdNameChange = (e: any, index: number) => {
+        setLinks(s => {
+            const newLinks = s.slice();
+            newLinks[index].data[0].product_name = e.target.value;
+            return newLinks;
+        });        
+    };
+
 
     //upload photo
     const handleFileChange= (e:any) =>{
         e.preventDefault();
-
-        const file= e.target.files[0];
-        setPhotos(file);
+        const files = e.target.files ? Array.from(e.target.files) : [];
+        setPhotos(files);
     
     };
 
@@ -69,29 +121,32 @@ const AddPost = () => {
         if (dialogRef.current) {
             dialogRef.current.showModal();
           }
-    }
+    };
 
-    const submitData = async(e:any) =>{
-        e.preventDefault();
-        console.log(links);
+    //submit post form
+    const submitData = async() =>{
 
         const formData = new FormData();
         formData.append("Caption",caption);
         formData.append("Links",JSON.stringify(links));
-        formData.append("Photo",photos);
+        
 
+        photos.map((each) =>{
+            formData.append("Photo",each);         
+        })
+
+        
         try{
             const res= await fetch('/api/posts',{
                 method: "POST",
                 body: formData,
             });
-
+            window.location.reload();
         }catch(error){
             console.log(error);
-        }
-        window.location.reload();
+        }     
         
-    }
+    };
 
 
     return (
@@ -109,7 +164,7 @@ const AddPost = () => {
                     <h3 className="font-bold text-lg">Create Post</h3>
                     <p className="py-4">Please fill the following informations to add your items</p>
                     
-                    <form>
+                    <form action={submitData} >
                         <div className="">
                             <input onChange={(e)=> {setCaption(e.target.value);} } 
                             type="text" placeholder="Caption" 
@@ -122,7 +177,7 @@ const AddPost = () => {
                                     <span className="label-text">Pick a file:</span>
                                 </div>
                                 <input  onChange={(e) => handleFileChange(e)} 
-                                accept="image/*" //multiple
+                                accept="image/*" multiple
                                 type="file" 
                                 className="file-input file-input-bordered w-full mb-2" required />
                             </label>
@@ -133,20 +188,54 @@ const AddPost = () => {
                                 </div>
                                 {links.map((item,i) => {
                                     return( 
-                                    <div className="flex" key={item.id}>
-                                        <input required 
-                                        onChange={handleLinkChange}
-                                        value={item.value} 
-                                        type={item.type}
-                                        placeholder={`Link ${i+1}`} 
-                                        className="input input-bordered w-full mb-2" 
-                                        // id={i}
-                                        id={`${i}`}/>   
-                                        <button 
-                                            className="btn btn-primary btn-sm ml-2 mt-2"
-                                            onClick={(e) => handleRemoveLinks(e,i)}
-                                            >-</button>
-                                    </div>
+                                        <>                                
+                                            {item.showPhotoInput &&<span className="mb-1 text-red-500">Couldn't fetch the data for the link provided. Please Enter detail manually.</span>} 
+
+                                            <div className="flex" key={item.id}>
+                                                <input 
+                                                onChange={handleLinkChange}
+                                                value={item.value} 
+                                                type="text"
+                                                placeholder={`Link ${i+1}`} 
+                                                className="input input-bordered w-full mb-2" 
+                                                id={`${i}`} required />
+
+                                                <button 
+                                                    className="btn btn-primary btn-sm ml-2 mt-2"
+                                                    onClick={(e) => handleRemoveLinks(e,i)}
+                                                    >-</button>
+                                                
+                                                {item.showPhotoInput &&
+                                                <div key={item.data[0].id}>
+                                                    <div className="label" >
+                                                        <span className="label-text">Product Name: </span>
+                                                    </div>   
+                                                    <input type="text" 
+                                                    onChange={(e) => handleLinkProdNameChange(e, i)}
+                                                    value={item.data[0].product_name}
+                                                    placeholder={`product name ${i+1}`} 
+                                                    className="input input-bordered w-50 mb-2" required
+                                                    />   
+
+                                                    <div className="label" >
+                                                        <span className="label-text">Add Image Address of the product: </span>
+                                                    </div>
+                                                    <input type="text" 
+                                                        onChange={(e) => handleLinkPhotoChange(e, i)}
+                                                        value={item.data[0].product_img}
+                                                        placeholder={`product image ${i+1}`} 
+                                                        className="input input-bordered w-50 mb-2" required
+                                                    /> 
+                                                </div>
+                                        
+                                                }                                                    
+                                            </div>
+
+                                                 
+                                            
+                                       
+                                        </>
+
                                     );
                                 })}   
                                 <button 
@@ -157,7 +246,7 @@ const AddPost = () => {
                             </label>
                             
                             <button 
-                             onClick={(e) => submitData(e)} 
+                             type="submit"
                              className="btn btn-success">Submit</button>
 
                         </div>

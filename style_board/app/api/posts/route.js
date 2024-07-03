@@ -11,12 +11,13 @@ const s3Client = new S3Client({
     }
 });
 
-async function uploadFileToS3(file,fileName){
+async function uploadFileToS3(file,fileName,folderName){
     const fileBuffer = file;
-    const key_url=`${fileName}-${Date.now()}`;
+    //your do `folderName/${fileName}-${Date.now()}` to create chunk
+    const key_url=`${folderName}/${fileName}-${Date.now()}`;
     const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
-        //your do `folderName/${fileName}-${Date.now()}` to create chunk
+        
         Key: key_url,
         Body: fileBuffer,
         ContentType: "image/jpeg",
@@ -37,25 +38,27 @@ async function uploadFileToS3(file,fileName){
 export async function POST(request){
     try{
         const formData = await request.formData();
-        const file = formData.get("Photo");
+        const files = formData.getAll("Photo");
         const links = formData.get("Links");
 
-        if(!file || links != ""){
+        if(!files){
+            console.log("here");
             return NextResponse.json({error: "file and link is required"},{status: 400});
         }
-
-        const buffer = Buffer.from(await file.arrayBuffer());
-        
-        //uploading the image file to AWS
-        const key_url = await uploadFileToS3(buffer,file.name);
+        const folderName=`${files[0].name}@${Date.now()}`
+        const uploadedUrls = await Promise.all(files.map(async (file) => {
+            const buffer = Buffer.from(await file.arrayBuffer());
+            const key_url = await uploadFileToS3(buffer, file.name,folderName);
+            return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key_url}`;
+        }));
         
         //Uploading to MONGODB
         await connectMongoDB();
-        const photo_url= `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key_url}`;
+        const photoUrls = JSON.stringify(uploadedUrls);
 
         // console.log(formData.get("Links"));
         try{
-            await Posts.create({Caption: formData.get("Caption"),Links: links,Photo_url:photo_url});
+            await Posts.create({Caption: formData.get("Caption"),Links: links,Photo_url:photoUrls});
         }catch(error){
             console.log(error);
         }

@@ -20,13 +20,16 @@ const GetPosts = () => {
     const router = useRouter();
 
     const [posts,setPosts] = useState([{
-        Links:[]
+        Photo_url:[],
+        Links:[],
     }]);
 
     const [isOpen,setIsOpen] = useState(false);
     const [isLoading,setIsLoading] = useState(true);
     const [isLoadingPosts,setIsLoadingPosts] = useState(true);
-    const [seletedPost,setSelectedPost] = useState([]);
+    const [seletedPost,setSelectedPost] = useState([{
+        Photo_url:[]
+    }]);
     const [links,setLinks] = useState([]);
 
     useEffect(() => {
@@ -41,11 +44,12 @@ const GetPosts = () => {
                 // Assuming `Links` is a stringified JSON array
                 const parsedPosts = data.posts.map((post:any) => ({
                     ...post,
+                    Photo_url:JSON.parse(post.Photo_url),
                     Links: JSON.parse(post.Links),
                 }));
-    
-            setPosts(parsedPosts);
-            setIsLoadingPosts(false);
+
+                setPosts(parsedPosts);
+                setIsLoadingPosts(false);
             }catch(error){
                 console.log(error);
             }
@@ -78,14 +82,15 @@ const GetPosts = () => {
     }
 
     const handleDrawer = async(index:number) => {
-        
+
         setIsOpen(true);
         setSelectedPost(posts[index]);
 
         setIsLoading(true);
         
-        const linksDataPromises = posts[index].Links.map(async (link) => {
-            const data = await handleLinksData(link.value);
+        const linksDataPromises = posts[index].Links.map(async (link) => {        
+            // console.log(link.data[0]);
+            const data = await handleLinksData(link.value,link);
             return {
                 data
             };
@@ -96,7 +101,7 @@ const GetPosts = () => {
         setIsLoading(false);
     }
 
-    const handleLinksData = async(url:string) =>{
+    const handleLinksData = async(url:string,link:any) =>{
         try {
             const  response  = await fetch(url);
             const data = await response.text();
@@ -108,7 +113,7 @@ const GetPosts = () => {
             //looking for the img tag with alt as the product name 
             let productImg = $('img').filter((index, element) => {
                 const alt = $(element).attr('alt');
-                return alt && alt.includes(productName);
+                return alt && alt.includes(productName.split(" ")[0]);
               }).first();
 
             //if not found grab the first image from the page
@@ -134,8 +139,8 @@ const GetPosts = () => {
             console.log('Error fetching data');
             return {
                 link:url,
-                product_name:"",
-                product_img:"",
+                product_name:link.data[0].product_name,
+                product_img:link.data[0].product_img,
                 product_price:"",
             };
         }
@@ -153,7 +158,7 @@ const GetPosts = () => {
                     {!isLoadingPosts && posts.map((post:any,index)=>
                         <div key={post._id} className="post-card overflow-scroll p-1" onClick={()=> handleDrawer(index)}>
                             <div className="">
-                                <img src={`${post.Photo_url}`} alt="Photo" className="image" />
+                                <img src={`${post.Photo_url[0]}`} alt="Photo" className="image" />
                             
                             {/* on hover body */}
                             {/* <div className="body">
@@ -181,7 +186,7 @@ const GetPosts = () => {
 
                         {/* inner card */}
                         <div className="p-1">
-                            <div className="static">
+                            <div className="">
                                 <div className="dropdown dropdown-start indicator-item badge absolute top-50">
                                     <div tabIndex={0} role="button" className="">
                                         <SlOptions className="post-ptions" />
@@ -192,7 +197,22 @@ const GetPosts = () => {
                                         <li><a>Edit</a></li>
                                     </ul>
                                 </div>
-                                <img src={`${seletedPost.Photo_url}`} alt="Photo" className="image" />                                
+
+                                <div className="carousel w-full">
+                                    {seletedPost.Photo_url &&
+                                        seletedPost.Photo_url.map((photo:any)=>
+                                            <div className="carousel-item w-full">
+                                                <img
+                                                src={`${photo}`}
+                                                className="carousel-image"
+                                                alt="[Photo]" />
+                                            </div>                                        
+                                        )
+                                    }
+
+
+                                </div>
+
                             </div>
 
 
