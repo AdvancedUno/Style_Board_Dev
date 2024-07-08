@@ -5,6 +5,7 @@ const postSchema = new Schema(
         Caption: String,
         Links: String,
         Photo_url: String,
+        Tags:String,
 
     },
     {

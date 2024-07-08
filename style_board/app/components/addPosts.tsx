@@ -22,6 +22,7 @@ const AddPost = () => {
     //storing links input fields
     const [links, setLinks] = useState(linksInputArr);
     const [caption,setCaption] = useState("");
+    const [tags,setTags] = useState([{}]);
     const [photos,setPhotos] = useState([]);
 
     //Handle Links 
@@ -108,7 +109,6 @@ const AddPost = () => {
         });        
     };
 
-
     //upload photo
     const handleFileChange= (e:any) =>{
         e.preventDefault();
@@ -129,7 +129,8 @@ const AddPost = () => {
         const formData = new FormData();
         formData.append("Caption",caption);
         formData.append("Links",JSON.stringify(links));
-        
+        formData.append("Tags",JSON.stringify(tags));
+        // console.log(JSON.stringify(tags));
 
         photos.map((each) =>{
             formData.append("Photo",each);         
@@ -172,24 +173,20 @@ const AddPost = () => {
                             id="caption" 
                             />     
 
-                            <label className="form-control w-full mb-2">{/*max-w-lg  */}
-                                <div className="label">
-                                    <span className="label-text">Pick a file:</span>
-                                </div>
-                                <input  onChange={(e) => handleFileChange(e)} 
+                            <span> Pick a file:</span>
+                            <input  onChange={(e) => handleFileChange(e)} 
                                 accept="image/*" multiple
                                 type="file" 
-                                className="file-input file-input-bordered w-full mb-2" required />
-                            </label>
-                        
-                            <label className="form-control w-full mb-6">
-                                <div className="label" >
-                                    <span className="label-text">Add links to your items: </span>
-                                </div>
+                                className="file-input file-input-bordered w-full mb-2" 
+                                required
+                            />
+
+                            <div className="mb-2">
+                                <span>Add links to your items: </span>
                                 {links.map((item,i) => {
                                     return( 
                                         <>                                
-                                            {item.showPhotoInput &&<span className="mb-1 text-red-500">Couldn't fetch the data for the link provided. Please Enter detail manually.</span>} 
+                                            {item.showPhotoInput &&<span className="flex mb-1 text-red-500">Couldn't fetch the data for the link provided. Please Enter detail manually.</span>} 
 
                                             <div className="flex" key={item.id}>
                                                 <input 
@@ -206,10 +203,8 @@ const AddPost = () => {
                                                     >-</button>
                                                 
                                                 {item.showPhotoInput &&
-                                                <div key={item.data[0].id}>
-                                                    <div className="label" >
-                                                        <span className="label-text">Product Name: </span>
-                                                    </div>   
+                                                <div key={item.data[0].id} className="p-1">
+                                                    <span className="m-3">Product Name: </span>
                                                     <input type="text" 
                                                     onChange={(e) => handleLinkProdNameChange(e, i)}
                                                     value={item.data[0].product_name}
@@ -217,9 +212,8 @@ const AddPost = () => {
                                                     className="input input-bordered w-50 mb-2" required
                                                     />   
 
-                                                    <div className="label" >
-                                                        <span className="label-text">Add Image Address of the product: </span>
-                                                    </div>
+                                                    
+                                                    <span className="flex m-3 ">Add Image Address of the product: </span>
                                                     <input type="text" 
                                                         onChange={(e) => handleLinkPhotoChange(e, i)}
                                                         value={item.data[0].product_img}
@@ -227,27 +221,30 @@ const AddPost = () => {
                                                         className="input input-bordered w-50 mb-2" required
                                                     /> 
                                                 </div>
-                                        
                                                 }                                                    
                                             </div>
-
-                                                 
-                                            
-                                       
                                         </>
-
                                     );
-                                })}   
+                                })}  
+
+   
                                 <button 
                                 className="btn btn-primary btn-sm w-full max-w-xs"
                                 onClick={handleAddLinks}
                                 >Add link</button>
-                                                 
-                            </label>
-                            
+                            </div>
+
+                            <span>Add Tags:</span>
+                            <input onChange={(e)=> {setTags(e.target.value.split(','));} } 
+                                type="text" placeholder="Tags" 
+                                className="input input-bordered w-full  mb-2" 
+                                   id="caption" 
+                            />    
+                            <span className="flex mb-2 text-slate-400 text-sm">Please add tags in comma seperated form. eg: pants,shorts...</span>   
+                                                    
                             <button 
                              type="submit"
-                             className="btn btn-success">Submit</button>
+                             className="btn btn-success mt-1">Submit</button>
 
                         </div>
                     </form>

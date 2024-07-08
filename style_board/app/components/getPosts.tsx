@@ -4,10 +4,14 @@ import { useRouter } from 'next/navigation';
 import Router from 'next/router'
 import '@/styles/posts.css'; 
 import Image from 'next/image'
-import { SlOptions } from "react-icons/sl";
-import cheerio from 'cheerio';
+
 import LoadingPage from '.././loading';
 
+import cheerio from 'cheerio';
+
+//React Icons
+import { SlOptions } from "react-icons/sl";
+import { GoDotFill } from "react-icons/go";
 
 interface Post {
   _id: string;
@@ -22,7 +26,11 @@ const GetPosts = () => {
     const [posts,setPosts] = useState([{
         Photo_url:[],
         Links:[],
+        Tags:[],
     }]);
+
+
+    const [displayCaption,setDisplayCaption] = useState(false);
 
     const [isOpen,setIsOpen] = useState(false);
     const [isLoading,setIsLoading] = useState(true);
@@ -46,6 +54,7 @@ const GetPosts = () => {
                     ...post,
                     Photo_url:JSON.parse(post.Photo_url),
                     Links: JSON.parse(post.Links),
+                    Tags:JSON.parse(post.Tags),
                 }));
 
                 setPosts(parsedPosts);
@@ -64,11 +73,14 @@ const GetPosts = () => {
 
     const handleDelete = async(e:any,id:string) =>{
         e.preventDefault();
-        const len_url=seletedPost.Photo_url.split("/").length
-        const key=seletedPost.Photo_url.split("/")[len_url-1];
-        console.log(key);
+        
+        //working with the image url of the first imge only
+        //since image stored under this folder in AWS
+        const len_url=seletedPost.Photo_url[0].split('/').length;
+        const folderName=seletedPost.Photo_url[0].split('/')[len_url-2];
+
         try{
-            const res= await fetch(`/api/posts?id=${id}&key=${key}`,{
+            const res= await fetch(`/api/posts?id=${id}&folderName=${folderName}`,{
                 method: "DELETE",
             });
 
@@ -77,15 +89,12 @@ const GetPosts = () => {
         }catch(error){
             console.log(error);
         }
-
-        
     }
 
     const handleDrawer = async(index:number) => {
 
         setIsOpen(true);
         setSelectedPost(posts[index]);
-
         setIsLoading(true);
         
         const linksDataPromises = posts[index].Links.map(async (link) => {        
@@ -151,35 +160,35 @@ const GetPosts = () => {
         <>
             <div className="grid grid-cols-4">
 
+                {/*Main feed Posts*/}
                 {isLoadingPosts && <LoadingPage/>}
-
                 <div className={`gap-2 p-2 ${isOpen?'col-span-3 columns-3xs': 'col-span-4 columns-3xs'}`}>  {/* col-span-2 for half */}
                     
                     {!isLoadingPosts && posts.map((post:any,index)=>
+ 
                         <div key={post._id} className="post-card overflow-scroll p-1" onClick={()=> handleDrawer(index)}>
                             <div className="">
                                 <img src={`${post.Photo_url[0]}`} alt="Photo" className="image" />
                             
-                            {/* on hover body */}
-                            {/* <div className="body">
-                                <h2>d</h2>
-                                <p>d</p>
-                            </div> */}
-                            
                                 <span className="post-caption">{post.Caption}</span>
                                 <div className="card-actions justify-end">
-                                    <span className="badge badge-outline text-xs">Fashion</span>
-                                    <span className="badge badge-outline text-xs">Products</span>
+                                    {post.Tags.map((tag:any )=>
+                                        tag.trim() == ""? <span></span>:<span className="badge badge-outline text-xs">{tag.trim()}</span>                                      
+                                    )}
                                 </div>
                             </div>
                         </div>  
-                    )
-                    }
+                        
+                    )}
 
                 </div>  
+
+
+                {/* Post Drawer */}
                 <div className="col-span-2">
                     <div className={`fixed top-0 right-0 w-96 h-full shadow-lg bg-base-100 transition-transform transform  overflow-scroll xl:w-100
                         ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                            
                         <div className="p-4">
                             <button className="btn btn-square btn-sm" onClick={()=>{setIsOpen(false)}} >✕</button>
                         </div>
@@ -187,7 +196,8 @@ const GetPosts = () => {
                         {/* inner card */}
                         <div className="p-1">
                             <div className="">
-                                <div className="dropdown dropdown-start indicator-item badge absolute top-50">
+
+                                <div className="dropdown dropdown-start indicator-item badge">
                                     <div tabIndex={0} role="button" className="">
                                         <SlOptions className="post-ptions" />
                                     </div>
@@ -198,34 +208,62 @@ const GetPosts = () => {
                                     </ul>
                                 </div>
 
-                                <div className="carousel w-full">
-                                    {seletedPost.Photo_url &&
-                                        seletedPost.Photo_url.map((photo:any)=>
-                                            <div className="carousel-item w-full">
-                                                <img
-                                                src={`${photo}`}
-                                                className="carousel-image"
-                                                alt="[Photo]" />
-                                            </div>                                        
-                                        )
-                                    }
+                                {/*Photo*/}
+                                {seletedPost.Photo_url &&
+                                    <>
+                                        <div className="carousel w-full">
+                                            { seletedPost.Photo_url.map((photo:any,i:number)=>
+                                                    <>
+                                                        <div id={`${i+1}`} className="carousel-item relative w-full">
 
-
-                                </div>
-
+                                                            
+                                                            <img
+                                                                src={`${photo}`}
+                                                                className="carousel-image"
+                                                                alt="[Photo]" 
+                                                            />
+                                                            <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
+                                                                <a href={`#${i}`} className="btn btn-outline btn-circle btn-sm">❮</a>
+                                                                <a href={`#${i+1+1}`} className="btn btn-outline btn-circle btn-sm">❯</a>
+                                                            </div>
+                                                        </div>                                                  
+                                                    </>
+                                                )}
+                                        </div>
+                                        <div className="flex w-full justify-center gap-2 py-2">
+                                                {seletedPost.Photo_url.map((photo:any,i:number)=>
+                                                    <a href={`#${i+1}`} className={`btn btn-xs btn-circle`}>{i+1}</a>
+                                                )}
+                                        </div>
+                                    </>
+                                }   
                             </div>
 
-
+                            {/* Captions and tags */}
                             <div className="p-1">
-                                <span className="post-caption">{seletedPost.Caption}</span>
+                                <span className="mb-2" onClick={()=>{setDisplayCaption(true)}}
+                                style={{
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: displayCaption ? 'unset' : '2',
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    cursor: 'pointer',
+                                }}>
+                                    {seletedPost.Caption}
+                                </span>
 
                                 {/* tages  */}
                                 <div className="card-actions justify-end">
-                                    <span className="badge badge-outline text-xs">Fashion</span>
-                                    <span className="badge badge-outline text-xs">Products</span>
+                                {seletedPost.Tags && seletedPost.Tags.map((tag:any )=>
+                                        tag.trim() == ""? <span></span>:<span className="badge badge-outline text-xs">{tag.trim()}</span>                                      
+                                    )}
                                 </div>
                             </div>
-                        </div>  
+
+                        </div> 
+
+                        {/* Products */}
                         <div className="grid grid-cols-2">
                             {isLoading && <LoadingPage/>}
                             {!isLoading && links.map((link:any,i) =>

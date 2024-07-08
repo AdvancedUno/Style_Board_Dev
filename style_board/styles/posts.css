@@ -13,7 +13,7 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  }
+}
 
 .image {
   border-radius: 8px;
@@ -29,27 +29,6 @@
   height: 100%;
   object-fit: contain; /* Maintain aspect ratio while fitting within the container */
 }
-
-/* .body {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.2);
-  color: white;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  padding: 16px;
-} */
-
-/* .post-card:hover .body{
-  transform: scale(1);
-} */
 
 
 
