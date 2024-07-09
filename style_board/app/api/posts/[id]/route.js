@@ -21,7 +21,8 @@ export async function GET(request,{params}){
 export async function PUT(request,{params}){
   
     const {id} =  params;
-    const { newCaption: caption} = await request.json();
+    const formData = await request.formData();
+    const caption = formData.get("Caption");
 
     await connectMongoDB();
     try{

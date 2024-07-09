@@ -166,6 +166,8 @@ const AddPost = () => {
                     <p className="py-4">Please fill the following informations to add your items</p>
                     
                     <form action={submitData} >
+
+                        {/* add form */}
                         <div className="">
                             <input onChange={(e)=> {setCaption(e.target.value);} } 
                             type="text" placeholder="Caption" 
@@ -181,14 +183,16 @@ const AddPost = () => {
                                 required
                             />
 
+                            {/* Add links */}
                             <div className="mb-2">
                                 <span>Add links to your items: </span>
                                 {links.map((item,i) => {
                                     return( 
-                                        <>                                
+                                        <div key={item.id}>                                
                                             {item.showPhotoInput &&<span className="flex mb-1 text-red-500">Couldn't fetch the data for the link provided. Please Enter detail manually.</span>} 
 
-                                            <div className="flex" key={item.id}>
+                                            <div className="flex" >
+                                                
                                                 <input 
                                                 onChange={handleLinkChange}
                                                 value={item.value} 
@@ -223,7 +227,7 @@ const AddPost = () => {
                                                 </div>
                                                 }                                                    
                                             </div>
-                                        </>
+                                        </div>
                                     );
                                 })}  
 
@@ -238,7 +242,7 @@ const AddPost = () => {
                             <input onChange={(e)=> {setTags(e.target.value.split(','));} } 
                                 type="text" placeholder="Tags" 
                                 className="input input-bordered w-full  mb-2" 
-                                   id="caption" 
+                                id="tags" required
                             />    
                             <span className="flex mb-2 text-slate-400 text-sm">Please add tags in comma seperated form. eg: pants,shorts...</span>   
                                                     
@@ -247,7 +251,9 @@ const AddPost = () => {
                              className="btn btn-success mt-1">Submit</button>
 
                         </div>
+
                     </form>
+                    
                 </div>
                 <form method="dialog" className="modal-backdrop">
                     <button>close</button>
