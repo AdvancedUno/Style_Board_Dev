@@ -1,9 +1,6 @@
 import connectMongoDB from "@/lib/db/mongodb";
 import Posts from "@/models/posts";
-import {NextResponse} from "next/server"
-
-//all the api which needs the id
-// like PUT 
+import {NextResponse} from "next/server";
 
 export async function GET(request,{params}){
     const {id} =  params;

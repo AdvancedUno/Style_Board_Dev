@@ -155,7 +155,7 @@ const AddPost = () => {
             {/*  <!-- Open the modal using ID.showModal() method --> */}
             <button className="btn btn-primary" onClick={handleAddPosts}>Add Post</button>
 
-
+            {/* Add Posts Modal */}
             <dialog id="add_post" className="modal" ref={dialogRef} >
                 <div className="modal-box w-11/12 max-w-3xl"> 
                     <form method="dialog">

@@ -7,6 +7,16 @@ const postSchema = new Schema(
         Photo_url: String,
         Tags:String,
 
+        //storing all user refrences who upvoted and downvoted on the post
+        upvotes: [{ 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'Users' 
+        }],
+        downvotes: [{ 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'Users' 
+        }]
+
     },
     {
         timestamps:true,

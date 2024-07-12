@@ -1,6 +1,6 @@
 import connectMongoDB from "@/lib/db/mongodb";
 import Posts from "@/models/posts";
-import {NextResponse} from "next/server"
+import {NextResponse} from "next/server";
 import { PutObjectCommand, S3Client,DeleteObjectCommand ,ListObjectsV2Command} from "@aws-sdk/client-s3";
 
 const s3Client = new S3Client({
@@ -132,4 +132,3 @@ export async function DELETE(request){
 
 
 }
-

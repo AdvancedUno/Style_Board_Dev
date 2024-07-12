@@ -11,14 +11,10 @@ import cheerio from 'cheerio';
 
 //React Icons
 import { SlOptions } from "react-icons/sl";
+import { BiUpvote, BiSolidUpvote , BiDownvote , BiSolidDownvote} from "react-icons/bi";
 
-interface Post {
-  _id: string;
-  Caption: string;
-  Photo_url: string;
-  Links: string;
-  // Add more properties if needed
-}
+
+
 const GetPosts = () => {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const router = useRouter();
@@ -28,7 +24,6 @@ const GetPosts = () => {
         Links:[],
         Tags:[],
     }]);
-
 
     const [displayCaption,setDisplayCaption] = useState(false);
 
@@ -96,6 +91,7 @@ const GetPosts = () => {
 
         setIsOpen(true);
         setSelectedPost(posts[index]);
+        console.log(posts[index].downvotes.length);
         setIsLoading(true);
         
         const linksDataPromises = posts[index].Links.map(async (link) => {        
@@ -184,6 +180,55 @@ const GetPosts = () => {
         }   
     }
 
+    const handleUpvote = async(e:any,postId:string) =>{
+
+        const userId = '66916b730d4aa0106025acd4'; //test user id
+    
+        try {
+            const response = await fetch(`/api/posts/${postId}/upvote`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId }),
+            });
+    
+            if (!response.ok) {
+                console.log('Error downvoting post');
+            }
+    
+            const data = await response.json();
+            console.log(data);
+    
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    const handleDownvote = async(e:any,postId:string) =>{
+        const userId = '66916b730d4aa0106025acd4'; //test user id
+    
+        try {
+            const response = await fetch(`/api/posts/${postId}/downvote`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId }),
+            });
+    
+            if (!response.ok) {
+                console.log('Error downvoting post');
+            }
+    
+            const data = await response.json();
+            console.log(data);
+    
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
     return (
         <>
             <div className="grid grid-cols-4">
@@ -194,12 +239,24 @@ const GetPosts = () => {
                     
                     {!isLoadingPosts && posts.map((post:any,index)=>
  
-                        <div key={post._id} className="post-card overflow-scroll p-1" onClick={()=> handleDrawer(index)}>
-                            <div className="">
-                                <img src={`${post.Photo_url[0]}`} alt="Photo" className="image" />
+                        <div key={post._id} className="post-card overflow-scroll p-1" >
+                            <div>
+                                <img src={`${post.Photo_url[0]}`} alt="Photo" className="image"  
+                                onClick={()=> handleDrawer(index)}
+                                style={{
+                                    cursor: "pointer",
+                                }}
+                                />
                             
                                 <span className="post-caption">{post.Caption}</span>
+                                
                                 <div className="card-actions justify-end">
+                                    <span 
+                                    className="badge badge-outline badge-primary ">
+                                       <button > <BiUpvote className="mr-1" onClick={(e)=> handleUpvote(e,post._id)}/>  </button>
+                                       {post.upvotes.length - post.downvotes.length}
+                                       <button  onClick={(e)=> handleDownvote(e,post._id)}><BiDownvote className="ml-1" /></button>
+                                    </span>
                                     {post.Tags.map((tag:any,i:number)=>
                                         tag.trim() == ""? <span></span>:<span key={`${i}`} className="badge badge-outline text-xs">{tag.trim()}</span>                                      
                                     )}
@@ -238,12 +295,10 @@ const GetPosts = () => {
 
                                 {/*Photo*/}
                                 {seletedPost.Photo_url &&
-                                    <>
+                                    <div>
                                         <div className="carousel w-full">
                                             { seletedPost.Photo_url.map((photo:any,i:number)=>
-                                                    <>
-                                                        <div id={`${i+1}`} className="carousel-item relative w-full">
-
+                                                        <div id={`${i+1}`} className="carousel-item relative w-full" key={i}>
                                                             
                                                             <img
                                                                 src={`${photo}`}
@@ -256,16 +311,15 @@ const GetPosts = () => {
                                                                 <a href={`#${i}`} className="btn btn-outline btn-circle btn-sm">❮</a>
                                                                 <a href={`#${i+1+1}`} className="btn btn-outline btn-circle btn-sm">❯</a>
                                                             </div>
-                                                        </div>                                                  
-                                                    </>
+                                                        </div>    
                                                 )}
                                         </div>
                                         <div className="flex w-full justify-center gap-2 py-2">
                                                 {seletedPost.Photo_url.map((photo:any,i:number)=>
-                                                    <a href={`#${i+1}`} className={`btn btn-xs btn-circle`}>{i+1}</a>
+                                                    <a key={i} href={`#${i+1}`} className={`btn btn-xs btn-circle`}>{i+1}</a>
                                                 )}
                                         </div>
-                                    </>
+                                    </div>
                                 }   
                             </div>
 
@@ -274,14 +328,21 @@ const GetPosts = () => {
                                 <span className="post-caption mb-2" onClick={()=>{setDisplayCaption(!displayCaption)}}
                                 style={{
                                     WebkitLineClamp: displayCaption ? 'unset' : '2',
+                                    cursor: "pointer",
                                 }}>
                                     {seletedPost.Caption}
                                 </span>
 
                                 {/* tages  */}
                                 <div className="card-actions justify-end">
-                                {seletedPost.Tags && seletedPost.Tags.map((tag:any )=>
-                                        tag.trim() == ""? <span></span>:<span className="badge badge-outline text-xs">{tag.trim()}</span>                                      
+                                {seletedPost.upvotes && <span 
+                                    className="badge badge-outline badge-primary ">
+                                       <button > <BiUpvote className="mr-1" onClick={(e)=> handleUpvote(e,seletedPost._id)}/>  </button>
+                                       {seletedPost.upvotes.length - seletedPost.downvotes.length}
+                                       <button  onClick={(e)=> handleDownvote(e,seletedPost._id)}><BiDownvote className="ml-1" /></button>
+                                </span>}
+                                {seletedPost.Tags && seletedPost.Tags.map((tag:any,i:number)=>
+                                        tag.trim() == ""? <span></span>:<span key={i} className="badge badge-outline text-xs">{tag.trim()}</span>                                      
                                     )}
                                 </div>
                             </div>
@@ -314,31 +375,31 @@ const GetPosts = () => {
                     </div>  
                 </div>
 
-            {/* Edit Caption Modal */}
-            <dialog id="edit_post" className="modal" ref={dialogRef} >
-                <div className="modal-box w-11/12 max-w-3xl"> 
-                    <form method="dialog">
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                    </form>
-                    
-                    <h3 className="font-bold text-lg">Edit Post</h3>
-                    <p className="py-4">Update your Caption on the post:</p>
-                    
-                    <form action={() => submitEditedCaption(seletedPost._id)} >
-                        <input onChange={(e)=> {setUpdateCaption(e.target.value);} } 
-                                type="text" placeholder="Caption" 
-                                className="input input-bordered w-full mb-2" 
-                                id="caption"
-                            />    
-                        <button 
-                            type="submit"
-                            className="btn btn-success mt-1">Submit</button>
-                    </form>
-                </div>
-                <form method="dialog" className="modal-backdrop">
-                    <button>close</button>
-                </form>                   
-            </dialog>
+                {/* Edit Caption Modal */}
+                <dialog id="edit_post" className="modal" ref={dialogRef} >
+                    <div className="modal-box w-11/12 max-w-3xl"> 
+                        <form method="dialog">
+                            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                        </form>
+                        
+                        <h3 className="font-bold text-lg">Edit Post</h3>
+                        <p className="py-4">Update your Caption on the post:</p>
+                        
+                        <form action={() => submitEditedCaption(seletedPost._id)} >
+                            <input onChange={(e)=> {setUpdateCaption(e.target.value);} } 
+                                    type="text" placeholder="Caption" 
+                                    className="input input-bordered w-full mb-2" 
+                                    id="caption"
+                                />    
+                            <button 
+                                type="submit"
+                                className="btn btn-success mt-1">Submit</button>
+                        </form>
+                    </div>
+                    <form method="dialog" className="modal-backdrop">
+                        <button>close</button>
+                    </form>                   
+                </dialog>
   
             </div>
             

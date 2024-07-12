@@ -4,7 +4,6 @@
   /* position: relative; */
   /* overflow: hidden; */
   border-radius: 5px;
-  cursor: pointer;
 }
 
 .post-caption {
@@ -14,7 +13,6 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  cursor: pointer;
 }
 
 .image {
