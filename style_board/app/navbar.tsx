@@ -39,12 +39,21 @@ const Navbar = async () => {
                         </div>
                         <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
                         <li>
-                            <Link href="/user" className="justify-between">
+                            <Link href="/" className="justify-between">
                             Profile
                             <span className="badge">New</span>
                             </Link>
                         </li>
-                        <li><a>Settings</a></li>
+                        <li>
+                            <Link href="/login" className="justify-between">
+                            login
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/signup" className="justify-between">
+                            Sign Up
+                            </Link>
+                        </li>
                         <li><a>Logout</a></li>
                         </ul>
                     </div>
