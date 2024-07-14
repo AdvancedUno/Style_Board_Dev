@@ -23,16 +23,20 @@ const GetPosts = () => {
         Photo_url:[],
         Links:[],
         Tags:[],
+        Votes:"",
+        votedUp:false,
+        votedDown:false,
     }]);
 
     const [displayCaption,setDisplayCaption] = useState(false);
-
     const [isOpen,setIsOpen] = useState(false);
     const [isLoading,setIsLoading] = useState(true);
     const [isLoadingPosts,setIsLoadingPosts] = useState(true);
+    
     const [seletedPost,setSelectedPost] = useState([{
-        Photo_url:[]
+        Photo_url:[],
     }]);
+    const [seletedPostIndex,setSelectedPostIndex] = useState(null);
     const [links,setLinks] = useState([]);
     const [updateCaption, setUpdateCaption] = useState("");
 
@@ -45,16 +49,24 @@ const GetPosts = () => {
             
                 const data = await res.json();  
 
+                // check logged in?...
+                const userId = '66916b730d4aa0106025acd4'; //change with logged in user id
+
                 // Assuming `Links` is a stringified JSON array
                 const parsedPosts = data.posts.map((post:any) => ({
                     ...post,
                     Photo_url:JSON.parse(post.Photo_url),
                     Links: JSON.parse(post.Links),
                     Tags:JSON.parse(post.Tags),
+                    Votes:post.upvotes.length - post.downvotes.length,
+                    votedUp: post.upvotes.includes(userId) ? true: false,
+                    votedDown: post.downvotes.includes(userId) ? true: false,
                 }));
 
                 setPosts(parsedPosts);
                 setIsLoadingPosts(false);
+
+    
             }catch(error){
                 console.log(error);
             }
@@ -91,7 +103,8 @@ const GetPosts = () => {
 
         setIsOpen(true);
         setSelectedPost(posts[index]);
-        console.log(posts[index].downvotes.length);
+        setSelectedPostIndex(index);
+
         setIsLoading(true);
         
         const linksDataPromises = posts[index].Links.map(async (link) => {        
@@ -115,7 +128,7 @@ const GetPosts = () => {
         const resolvedLinksData = await Promise.all(linksDataPromises);
         setLinks(resolvedLinksData);
         setIsLoading(false);
-    };
+    };        
 
     const handleEditPost= () =>{
         if (dialogRef.current) {
@@ -180,10 +193,10 @@ const GetPosts = () => {
         }   
     }
 
-    const handleUpvote = async(e:any,postId:string) =>{
+    const handleUpvote = async(e:any,postId:string,index:number) =>{
+        //check if logged in...
+        const userId = '66916b730d4aa0106025acd4'; //change with logged in user id
 
-        const userId = '66916b730d4aa0106025acd4'; //test user id
-    
         try {
             const response = await fetch(`/api/posts/${postId}/upvote`, {
                 method: 'POST',
@@ -192,22 +205,27 @@ const GetPosts = () => {
                 },
                 body: JSON.stringify({ userId }),
             });
-    
-            if (!response.ok) {
-                console.log('Error downvoting post');
-            }
-    
+
             const data = await response.json();
-            console.log(data);
+            const post=data.post;
+            // console.log(data.post); 
+            setPosts(each =>{
+                const newVotes = each.slice();
+                newVotes[index].Votes=post.upvotes.length - data.post.downvotes.length;                    votedUp: post.upvotes.includes(userId) ? true: false,
+                newVotes[index].votedUp= post.upvotes.includes(userId) ? true: false;
+                newVotes[index].votedDown= post.downvotes.includes(userId) ? true: false;
+                return newVotes;
+            });
     
         } catch (error) {
             console.error('Error:', error);
         }
     }
 
-    const handleDownvote = async(e:any,postId:string) =>{
-        const userId = '66916b730d4aa0106025acd4'; //test user id
-    
+    const handleDownvote = async(e:any,postId:string,index:number) =>{
+        //check if logged in...
+        const userId = '66916b730d4aa0106025acd4'; //change with logged in user id
+
         try {
             const response = await fetch(`/api/posts/${postId}/downvote`, {
                 method: 'POST',
@@ -216,13 +234,16 @@ const GetPosts = () => {
                 },
                 body: JSON.stringify({ userId }),
             });
-    
-            if (!response.ok) {
-                console.log('Error downvoting post');
-            }
-    
+ 
             const data = await response.json();
-            console.log(data);
+            // console.log(data.post);
+            setPosts(each =>{
+                const newVotes = each.slice();
+                newVotes[index].Votes= data.post.upvotes.length - data.post.downvotes.length;
+                newVotes[index].votedUp= data.post.upvotes.includes(userId) ? true: false;
+                newVotes[index].votedDown= data.post.downvotes.includes(userId) ? true: false;
+                return newVotes;
+            });
     
         } catch (error) {
             console.error('Error:', error);
@@ -253,9 +274,19 @@ const GetPosts = () => {
                                 <div className="card-actions justify-end">
                                     <span 
                                     className="badge badge-outline badge-primary ">
-                                       <button > <BiUpvote className="mr-1" onClick={(e)=> handleUpvote(e,post._id)}/>  </button>
-                                       {post.upvotes.length - post.downvotes.length}
-                                       <button  onClick={(e)=> handleDownvote(e,post._id)}><BiDownvote className="ml-1" /></button>
+                                       <button  onClick={(e)=> handleUpvote(e,post._id,index)}> 
+                                            {!post.votedUp ?
+                                            <BiUpvote className="mr-1"/>
+                                            :<BiSolidUpvote className="mr-1"/> }
+                                        </button>
+                                       {/* {(post.upvotes.length - post.downvotes.length) } */}
+                                       {post.Votes}
+                                       <button onClick={(e)=> handleDownvote(e,post._id,index)}>
+                                            {!post.votedDown ?
+                                            <BiDownvote className="ml-1"/>
+                                            :<BiSolidDownvote className="ml-1"/> 
+                                            }
+                                        </button>
                                     </span>
                                     {post.Tags.map((tag:any,i:number)=>
                                         tag.trim() == ""? <span></span>:<span key={`${i}`} className="badge badge-outline text-xs">{tag.trim()}</span>                                      
@@ -337,9 +368,20 @@ const GetPosts = () => {
                                 <div className="card-actions justify-end">
                                 {seletedPost.upvotes && <span 
                                     className="badge badge-outline badge-primary ">
-                                       <button > <BiUpvote className="mr-1" onClick={(e)=> handleUpvote(e,seletedPost._id)}/>  </button>
-                                       {seletedPost.upvotes.length - seletedPost.downvotes.length}
-                                       <button  onClick={(e)=> handleDownvote(e,seletedPost._id)}><BiDownvote className="ml-1" /></button>
+                                       
+                                       <button onClick={(e)=> handleUpvote(e,seletedPost._id,seletedPostIndex)}> 
+                                            {!seletedPost.votedUp ?
+                                                    <BiUpvote className="ml-1"/>
+                                                    :<BiSolidUpvote className="ml-1"/> 
+                                                    }
+                                        </button>
+                                       {seletedPost.Votes}
+                                       <button  onClick={(e)=> handleDownvote(e,seletedPost._id,seletedPostIndex)}>
+                                        {!seletedPost.votedDown ?
+                                                <BiDownvote className="ml-1"/>
+                                                :<BiSolidDownvote className="ml-1"/> 
+                                                }
+                                        </button>
                                 </span>}
                                 {seletedPost.Tags && seletedPost.Tags.map((tag:any,i:number)=>
                                         tag.trim() == ""? <span></span>:<span key={i} className="badge badge-outline text-xs">{tag.trim()}</span>                                      

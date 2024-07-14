@@ -21,7 +21,7 @@ export async function POST(request,{params}) {
         if (post.upvotes.includes(userId)) {
             post.upvotes.pull(userId);
             await post.save();
-            return NextResponse.json({ error: 'You have already upvoted this post so we pull your upvote' }, { status: 400 });
+            return NextResponse.json({ error: 'You have already upvoted this post so we pull your upvote',post:post }, { status: 200 });
         }
 
         // Check if the user has downvoted previously, remove if so
@@ -33,7 +33,7 @@ export async function POST(request,{params}) {
         post.upvotes.push(userId);
         await post.save();
 
-        return NextResponse.json({ message: 'Upvoted successfully', post }, { status: 200 });
+        return NextResponse.json({ message: 'Upvoted successfully', post: post }, { status: 200 });
 
     } catch (error) {
         console.error('Error upvoting post:', error);
